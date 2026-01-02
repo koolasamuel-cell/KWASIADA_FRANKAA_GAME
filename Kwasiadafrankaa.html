@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>KWASIADA FRANKAA - 3D Ashanti Edition</title>
+<style>
+    :root {
+        --gold: #FFD700;
+        --green: #00AA00;
+        --black: #000000;
+    }
+    body {
+        margin: 0;
+        background: radial-gradient(circle, #333, #0a0a0a);
+        color: white;
+        font-family: 'Segoe UI', Roboto, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+        overflow-x: hidden;
+    }
+    #header {
+        width: 100%;
+        padding: 20px 0;
+        background: rgba(0,0,0,0.9);
+        border-bottom: 4px solid var(--gold);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 30px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+    }
+    #title {
+        font-size: 38px;
+        color: var(--gold);
+        text-shadow: 3px 3px 0 #000;
+        margin: 0;
+    }
+    .flag-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .flag-label {
+        font-size: 12px;
+        color: var(--gold);
+        font-weight: bold;
+        letter-spacing: 2px;
+        margin-bottom: 4px;
+    }
+    .ashanti-flag {
+        width: 85px;
+        height: 52px;
+        border: 2px solid #333;
+        display: flex;
+        flex-direction: column;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    .stripe { flex: 1; width: 100%; }
+
+    .container {
+        width: 90%;
+        max-width: 550px;
+        margin-top: 25px;
+        perspective: 1000px;
+    }
+    .panel-3d {
+        background: rgba(255,255,255,0.1);
+        backdrop-filter: blur(15px);
+        padding: 25px;
+        border-radius: 25px;
+        border: 2px solid var(--gold);
+        box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+        transform: rotateX(5deg);
+        text-align: center;
+    }
+
+    input, select, button {
+        padding: 12px;
+        margin: 8px;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: bold;
+        border: none;
+    }
+    input, select { background: rgba(0,0,0,0.7); color: white; border: 1px solid #444; width: 80%; }
+    button { background: var(--gold); color: black; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 0 #b8860b; }
+    button:hover { background: white; }
+    
+    #game {
+        background: #e0e0e0;
+        border-radius: 30px;
+        border: 10px solid #222;
+        box-shadow: 0 40px 80px rgba(0,0,0,0.8);
+        transform: perspective(1000px) rotateX(20deg);
+        margin-top: -10px;
+        cursor: pointer;
+    }
+    .hidden { display: none !important; }
+    #status { font-size: 26px; color: var(--gold); margin-bottom: 10px; text-shadow: 2px 2px black; }
+
+    #footer-copy {
+        margin-top: auto;
+        padding: 20px;
+        color: var(--gold);
+        font-size: 14px;
+        text-align: center;
+        opacity: 0.9;
+        font-weight: bold;
+    }
+</style>
+</head>
+<body>
+
+<div id="header">
+    <h1 id="title">KWASIADA FRANKAA</h1>
+    <div class="flag-container">
+        <div class="flag-label">ASHANTI</div>
+        <div class="ashanti-flag">
+            <div class="stripe" style="background:var(--gold)"></div>
+            <div class="stripe" style="background:var(--black)"></div>
+            <div class="stripe" style="background:var(--green)"></div>
+        </div>
+    </div>
+</div>
+
+<div class="container" id="menu-ui">
+    <div class="panel-3d">
+        <div style="margin-bottom: 15px;">
+            <button id="btnComp" onclick="setMode('vsComp')">vs Computer</button>
+            <button id="btnHuman" style="background:#555; color:#ccc" onclick="setMode('vsHuman')">vs Human</button>
+        </div>
+        <input id="p1Name" oninput="syncLabels()" placeholder="Player 1 Name" value="Nana">
+        <input id="p2Name" oninput="syncLabels()" class="hidden" placeholder="Player 2 Name" value="Kofi">
+        
+        <select id="diffLevel">
+            <option value="1">Level 1: Okokodurfo</option>
+            <option value="6">Level 2: Okofo</option>
+            <option value="20">Level 3: Osahene Master (HARD)</option>
+        </select>
+
+        <select id="starterSelect" style="margin-top: 10px;"></select>
+        <br>
+        <button onclick="startGame()" style="width:90%; font-size: 22px; margin-top: 15px;">START GAME</button>
+    </div>
+</div>
+
+<div class="container hidden" id="game-ui">
+    <div id="status">Nana's Turn</div>
+    <div class="panel-3d" style="padding: 10px; display: flex; justify-content: space-around;">
+        <button onclick="undoMove()" style="background:white">UNDO</button>
+        <button onclick="confirmQuit()" style="background:#a00; color:white">QUIT</button>
+    </div>
+</div>
+
+<canvas id="game" width="600" height="600" class="hidden"></canvas>
+
+<div class="container hidden" id="result-ui">
+    <div class="panel-3d">
+        <h2 id="winText" style="font-size: 28px;"></h2>
+        <button onclick="startGame()">PLAY AGAIN</button>
+        <button onclick="confirmQuit()">MENU</button>
+    </div>
+</div>
+
+<div id="footer-copy">
+    &copy; 2026 Koola &ndash; Kwasiada Frankaa<br>
+    All Rights Reserved. Unauthorized copying or redistribution prohibited.
+</div>
+
+<script>
+/* © 2026 Koola – Kwasiada Frankaa */
+(()=>{const _=console.log;console.log=function(){};})();
+
+/* your game code continues here */
+/* AUDIO & VOICE */
+const sfx = {
+    move: new Audio('https://actions.google.com/sounds/v1/foley/wood_plank_foley.ogg'),
+    start: new Audio('https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg'),
+    win: new Audio('https://actions.google.com/sounds/v1/human/applause_moderate.ogg'),
+    select: new Audio('https://actions.google.com/sounds/v1/cartoon/pop.ogg'),
+    warning: new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg')
+};
+
+function speakResult(isWin, name) {
+    const msg = new SpeechSynthesisUtterance();
+    if (isWin) {
+        msg.text = `Congratulations ${name}, you won! Piaoow!!!`;
+    } else {
+        msg.text = `Sorry ${name}, you lost. Better luck next time.`;
+    }
+    msg.rate = 0.9;
+    msg.pitch = 1.1;
+    window.speechSynthesis.speak(msg);
+}
+
+function confirmQuit() {
+    sfx.warning.play();
+    setTimeout(() => {
+        if (confirm("Warning: Are you sure you want to quit the game?")) {
+            location.reload();
+        }
+    }, 100);
+}
+
+/* GAME LOGIC */
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+const points = [{x:100,y:100},{x:300,y:100},{x:500,y:100},{x:100,y:300},{x:300,y:300},{x:500,y:300},{x:100,y:500},{x:300,y:500},{x:500,y:500}];
+const links = [[0,1],[1,2],[3,4],[4,5],[6,7],[7,8],[0,3],[3,6],[1,4],[4,7],[2,5],[5,8],[0,4],[2,4],[6,4],[8,4]];
+const winLines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+
+let playerPawns = [], computerPawns = [], stateStack = [];
+let gameMode = "vsComp", gameState = "menu", currentTurn = "player1", selectedIdx = null;
+
+function setMode(m) {
+    gameMode = m; sfx.select.play();
+    document.getElementById("btnComp").style.background = (m==='vsComp')? "var(--gold)":"#555";
+    document.getElementById("btnHuman").style.background = (m==='vsHuman')? "var(--gold)":"#555";
+    document.getElementById("p2Name").classList.toggle("hidden", m==='vsComp');
+    syncLabels();
+}
+
+function syncLabels() {
+    const p1 = document.getElementById("p1Name").value || "Nana";
+    const p2 = document.getElementById("p2Name").value || "Kofi";
+    const sel = document.getElementById("starterSelect");
+    sel.innerHTML = `<option value="player1">${p1} Starts</option>
+                     <option value="opponent">${gameMode==='vsComp'?'AI':p2} Starts</option>`;
+}
+
+function draw() {
+    ctx.clearRect(0,0,600,600);
+    ctx.strokeStyle = "#555"; ctx.lineWidth = 10;
+    links.forEach(l => {
+        ctx.beginPath(); ctx.moveTo(points[l[0]].x, points[l[0]].y);
+        ctx.lineTo(points[l[1]].x, points[l[1]].y); ctx.stroke();
+    });
+    points.forEach(p => {
+        ctx.fillStyle = "#999"; ctx.beginPath(); ctx.arc(p.x, p.y, 14, 0, 7); ctx.fill();
+    });
+
+    const drawPawn = (pos, c1, c2, act) => {
+        const p = points[pos];
+        if (act) { ctx.shadowBlur = 30; ctx.shadowColor = "cyan"; }
+        let g = ctx.createRadialGradient(p.x-8, p.y-8, 5, p.x, p.y, 25);
+        g.addColorStop(0, c1); g.addColorStop(1, c2);
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(p.x, p.y, 28, 0, 7); ctx.fill();
+        ctx.shadowBlur = 0;
+    };
+
+    playerPawns.forEach((p,i) => drawPawn(p, "#fff", "#FF4500", currentTurn==='player1' && selectedIdx===i));
+    computerPawns.forEach((p,i) => drawPawn(p, "#444", "#000", currentTurn==='opponent' && selectedIdx===i));
+}
+
+function startGame() {
+    sfx.start.play();
+    playerPawns = []; computerPawns = []; stateStack = [];
+    gameState = "placing";
+    currentTurn = document.getElementById("starterSelect").value;
+    document.getElementById("menu-ui").classList.add("hidden");
+    document.getElementById("result-ui").classList.add("hidden");
+    document.getElementById("game-ui").classList.remove("hidden");
+    canvas.classList.remove("hidden");
+    saveState();
+    updateStatus(); draw();
+    if (gameMode === "vsComp" && currentTurn === "opponent") setTimeout(aiTurn, 800);
+}
+
+// FIXED: Increased sensitivity (80px radius) and scale correction
+canvas.onclick = (e) => {
+    if (gameState === "ended" || (gameMode === "vsComp" && currentTurn === "opponent")) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.clientX - rect.left) * (600 / rect.width);
+    const y = (e.clientY - rect.top) * (600 / rect.height);
+    let active = currentTurn === "player1" ? playerPawns : computerPawns;
+    const clickRadius = 80; 
+
+    if (gameState === "placing") {
+        points.forEach((p, i) => {
+            if (Math.hypot(x-p.x, y-p.y) < clickRadius && !playerPawns.includes(i) && !computerPawns.includes(i)) {
+                sfx.select.play(); active.push(i); endTurn();
+            }
+        });
+    } else {
+        let foundIdx = -1;
+        active.forEach((pos, i) => {
+            if (Math.hypot(x-points[pos].x, y-points[pos].y) < clickRadius) foundIdx = i;
+        });
+
+        if (foundIdx !== -1) {
+            sfx.select.play(); selectedIdx = foundIdx; draw();
+        } else if (selectedIdx !== null) {
+            points.forEach((p, i) => {
+                if (Math.hypot(x-p.x, y-p.y) < clickRadius && !playerPawns.includes(i) && !computerPawns.includes(i)) {
+                    const from = active[selectedIdx];
+                    if (links.some(l => (l[0]===from && l[1]===i) || (l[1]===from && l[0]===i))) {
+                        active[selectedIdx] = i; selectedIdx = null; endTurn();
+                    }
+                }
+            });
+        }
+    }
+};
+
+function endTurn() {
+    sfx.move.play(); draw();
+    if (checkWin(playerPawns)) return gameOver("player1");
+    if (checkWin(computerPawns)) return gameOver("opponent");
+    if (playerPawns.length === 3 && computerPawns.length === 3) gameState = "moving";
+    currentTurn = (currentTurn === "player1") ? "opponent" : "player1";
+    saveState(); 
+    updateStatus();
+    if (gameMode === "vsComp" && currentTurn === "opponent") setTimeout(aiTurn, 600);
+}
+
+function checkWin(p) { return winLines.some(line => line.every(pos => p.includes(pos))); }
+
+function aiTurn() {
+    const level = parseInt(document.getElementById("diffLevel").value);
+    const free = points.map((_,i)=>i).filter(i => !playerPawns.includes(i) && !computerPawns.includes(i));
+    if (gameState === "placing") {
+        let move = free.find(f => checkWin([...computerPawns, f])) || free.find(f => checkWin([...playerPawns, f]));
+        if (!move && level >= 6 && free.includes(4)) move = 4;
+        if (move === undefined) move = free[Math.floor(Math.random()*free.length)];
+        computerPawns.push(move);
+    } else {
+        let moves = [];
+        computerPawns.forEach((pos, idx) => {
+            links.forEach(l => {
+                let to = l[0]===pos?l[1]:l[1]===pos?l[0]:-1;
+                if (to!==-1 && !playerPawns.includes(to) && !computerPawns.includes(to)) moves.push({idx, to});
+            });
+        });
+        let best = moves.find(m => { let t=[...computerPawns]; t[m.idx]=m.to; return checkWin(t); });
+        if (!best && level >= 6) best = moves.find(m => winLines.some(line => line.filter(lp => playerPawns.includes(lp)).length === 2 && line.includes(m.to)));
+        let final = best || moves[Math.floor(Math.random()*moves.length)];
+        if (final) computerPawns[final.idx] = final.to;
+    }
+    endTurn();
+}
+
+function gameOver(w) {
+    gameState = "ended";
+    const p1 = document.getElementById("p1Name").value || "Nana";
+    const p2 = document.getElementById("p2Name").value || "Kofi";
+    
+    document.getElementById("game-ui").classList.add("hidden");
+    document.getElementById("result-ui").classList.remove("hidden");
+    
+    if (gameMode === "vsComp" && w === "opponent") {
+        // FIXED: Personalized lost text and voice
+        document.getElementById("winText").innerText = `SORRY ${p1.toUpperCase()}, YOU LOST!`;
+        speakResult(false, p1);
+    } else {
+        const winnerName = (w === "player1") ? p1 : p2;
+        document.getElementById("winText").innerText = `${winnerName.toUpperCase()} WINS!`;
+        speakResult(true, winnerName);
+    }
+    sfx.win.play();
+}
+
+function updateStatus() {
+    const p1 = document.getElementById("p1Name").value || "Nana";
+    const p2 = document.getElementById("p2Name").value || "Kofi";
+    document.getElementById("status").innerText = (currentTurn === "player1" ? p1 : (gameMode==='vsComp'?'AI':p2)) + "'s Turn";
+}
+
+function saveState() { 
+    stateStack.push({
+        p: [...playerPawns], 
+        c: [...computerPawns], 
+        gs: gameState, 
+        turn: currentTurn 
+    }); 
+}
+
+function undoMove() {
+    // FIXED: Correct turn management in undo
+    if (stateStack.length > 1) {
+        stateStack.pop(); 
+        const last = stateStack[stateStack.length-1];
+        playerPawns = [...last.p]; 
+        computerPawns = [...last.c];
+        gameState = last.gs; 
+        currentTurn = last.turn; 
+        selectedIdx = null;
+        draw(); 
+        updateStatus();
+    }
+}
+syncLabels();
+</script>
+</body>
+</html>
