@@ -181,27 +181,47 @@ footer { margin-top: auto; padding: 30px; font-size: 12px; color: #555; text-ali
         <button class="start-btn" onclick="startGame()">START MATCH</button>
     </div>
 
-    <div class="history-panel" style="text-align: center;">
-        <h3 style="background-color: var(--ashanti-gold); color: black; display: inline-block; padding: 8px 16px; border-radius: 6px; text-transform: uppercase; letter-spacing: 2px; font-weight: bold; margin-bottom: 6px;">
-            ABOUT KWASIADA FRANKAA
-        </h3>
-        <div style="background-color: var(--ashanti-black); color: white; padding: 12px 15px; border-radius: 8px; font-family: Arial, sans-serif; line-height: 1.5; text-align: left;">
-            <p><strong>Kwasiada Frankaa</strong> is a traditional Ashanti strategy board game. "Kwasiada" refers to a Sunday-born person, while "Frankaa" means flag, banner, signal, or symbol of victory.</p>
-            <p>The game revolves around a central flag (frankaa) which players must protect, capture, or use strategically to win.</p>
-            
-            <div id="moreText" style="display: none;">
-                <p><strong style="background-color: var(--ashanti-gold); color: black; padding: 2px 4px; border-radius: 3px;">Origin & History:</strong> The game originated in Ashanti communities in the late 19th century (around the 1880s–1890s) and has been passed down through oral tradition. Traditionally, players used <strong>charcoal to draw the board lines</strong> and <strong>stones or broken broomsticks</strong> as pawns. It was played during village evenings, festivals, or moonlight gatherings, serving as both entertainment and a tool for developing mental sharpness.</p>
-                <p><strong style="background-color: var(--ashanti-gold); color: black; padding: 2px 4px; border-radius: 3px;">Gameplay & Rules:</strong> The objective is to <strong>align all pawns in a straight line</strong>—vertically, horizontally, or diagonally. Players take turns moving one pawn at a time, and <strong>no pawn may be skipped or jumped</strong>. The first player to align all their pawns wins the round.</p>
-                <p><strong style="background-color: var(--ashanti-gold); color: black; padding: 2px 4px; border-radius: 3px;">Cultural Significance:</strong> Kwasiada Frankaa teaches <strong>alertness, timing, strategic thinking, patience, and problem-solving</strong>, while promoting <strong>friendly competition and community bonding</strong>. Today, digitizing or modernizing the game helps preserve Ashanti heritage and introduce it to younger generations.</p>
-            </div>
-            <button id="readMoreBtn" onclick="toggleReadMore()" style="margin-top: 10px; background-color: var(--ashanti-gold); color: black; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;">
-                Read More
-            </button>
-            <p style="margin-top: 10px;"><small>Source: "Asante Traditional Games and Play Culture" (Oral Accounts, 2020, Kwame Nkrumah University of Science and Technology Cultural Studies Department).</small></p>
+  <div class="history-panel" style="text-align: center;">
+    <h3 style="background-color: var(--ashanti-gold); color: black; display: inline-block; padding: 8px 16px; border-radius: 6px; text-transform: uppercase; letter-spacing: 2px; font-weight: bold; margin-bottom: 6px;">
+        ABOUT KWASIADA FRANKAA
+    </h3>
+    <div style="background-color: var(--ashanti-black); color: white; padding: 12px 15px; border-radius: 8px; font-family: Arial, sans-serif; line-height: 1.5; text-align: left;">
+        <p><strong>Kwasiada Frankaa</strong> is a traditional Ashanti strategy board game. "<strong>Kwasiada</strong>" refers to Sunday, while "<strong>Frankaa</strong>" means flag—a symbol of leadership or victory in traditional Ashanti contexts.</p>
+        <p>The game centers around a central flag (frankaa) that players must protect, capture, or use strategically to win.</p>
+
+        <div id="moreText" style="display: none;">
+            <p><strong style="background-color: var(--ashanti-gold); color: black; padding: 2px 4px; border-radius: 3px;">Origin & History:</strong> Kwasiada Frankaa originated in Ashanti communities in the late 19th century (around the 1880s–1890s) and has been preserved through oral tradition. It was traditionally played during village evenings, festivals, or moonlight gatherings, serving both as entertainment and as a way to develop mental sharpness.</p>
+
+            <p><strong style="background-color: var(--ashanti-gold); color: black; padding: 2px 4px; border-radius: 3px;">How Children Played:</strong> To create the board, children either used <strong>charcoal to draw lines</strong> and folded paper, stones, or broken broomsticks as pawns, <strong>or</strong> they sometimes used sticks to draw lines on the ground, often in <strong>sand or clay</strong>, using <strong>stones to represent the three pawns</strong>. The game served both as entertainment and as a tool to sharpen strategic thinking from a young age.</p>
+
+            <p><strong style="background-color: var(--ashanti-gold); color: black; padding: 2px 4px; border-radius: 3px;">Gameplay & Rules:</strong> The objective is to <strong>align all pawns in a straight line</strong>—vertically, horizontally, or diagonally. Players take turns moving one pawn at a time, and <strong>no pawn may be skipped or jumped</strong>. The first player to align all their pawns wins the round.</p>
+
+            <p><strong style="background-color: var(--ashanti-gold); color: black; padding: 2px 4px; border-radius: 3px;">Cultural Significance:</strong> Kwasiada Frankaa teaches <strong>alertness, timing, strategic thinking, patience, and problem-solving</strong>, while promoting <strong>friendly competition and community bonding</strong>. Modern adaptations of the game help preserve Ashanti heritage and introduce it to younger generations.</p>
+
+            <p><strong style="background-color: var(--ashanti-gold); color: black; padding: 2px 4px; border-radius: 3px;">Notable Players:</strong> Samuel Attah-Nti, who developed a modern version of the game, recalls playing it as a child.</p>
         </div>
+
+        <button id="readMoreBtn" onclick="toggleReadMore()" style="margin-top: 10px; background-color: var(--ashanti-gold); color: black; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;">
+            Read More
+        </button>
+
+        <p style="margin-top: 10px;"><small>Source: "Asante Traditional Games and Play Culture" (Oral Accounts, 2020, Kwame Nkrumah University of Science and Technology Cultural Studies Department).</small></p>
     </div>
 </div>
 
+<script>
+function toggleReadMore() {
+    const moreText = document.getElementById("moreText");
+    const btn = document.getElementById("readMoreBtn");
+    if (moreText.style.display === "none") {
+        moreText.style.display = "block";
+        btn.innerText = "Read Less";
+    } else {
+        moreText.style.display = "none";
+        btn.innerText = "Read More";
+    }
+}
+</script>
 <div class="container hidden" id="game-ui" style="text-align:center;">
     <div id="status">Koola's Turn</div>
     <canvas id="gameCanvas" width="600" height="600"></canvas>
@@ -340,7 +360,7 @@ if(Math.hypot(x-p.x,y-p.y)<40){
             else computerPawns.push(i);
             
             // Check if placement phase is complete
-            if(playerPawns.length === 3 && computerPawns.length === 3) {
+`            if(playerPawns.length === 3 && computerPawns.length === 3) {
                 gameState = "moving";
             }
             endTurn();
